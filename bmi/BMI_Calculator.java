@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -17,6 +18,9 @@ import javafx.stage.Stage;
 
 public class BMI_Calculator extends Application
 {
+	//Using ComboBox to avoid user not entering height
+	ComboBox<Integer> cbFeet = new ComboBox<>();
+	ComboBox<Integer> cbInches = new ComboBox<>();
 	TextField tfFeet = new TextField();
 	TextField tfInches = new TextField();
 	TextField tfPounds = new TextField();
@@ -24,24 +28,28 @@ public class BMI_Calculator extends Application
 	@Override
 	public void start(Stage primaryStage)
 	{
+		//GUI Components
 		BorderPane pane = new BorderPane();
 		GridPane gridPane = new GridPane();
 		Text text = new Text("Body Mass Index Calculator");
 		Text height = new Text("Enter your height");
 		Text weight = new Text("Enter your weight");
-		
-		
-		Label feet = new Label("ft", tfFeet);
-		Label inches = new Label("in", tfInches);
+		Label feet = new Label("ft", cbFeet);
+		Label inches = new Label("in", cbInches);
 		Label pounds = new Label("lbs", tfPounds);
-		
 		Button btCalculate = new Button("Calculate");
 		
-		tfFeet.setPrefWidth(40);
-		tfInches.setPrefWidth(40);
+		//Adding elements of both ComboBox objects
+		cbFeet.getItems().addAll(0, 1, 2, 3, 4, 5, 6, 7, 8);
+		cbInches.getItems().addAll(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+		
+		//Set default value to avoid null values
+		cbFeet.setValue(0);
+		cbInches.setValue(0);
+		
 		tfPounds.setPrefWidth(40);
 		
-		
+		//Adding nodes to the pane
 		gridPane.setHgap(10);
 		gridPane.setVgap(20);
 		
@@ -54,10 +62,11 @@ public class BMI_Calculator extends Application
 		
 		gridPane.add(btCalculate, 1, 2);
 		
+		//Event handler for calculate button will calculate BMI and display it to the user along with a message about their BMI
 		btCalculate.setOnAction(e-> {
 			
-			final double bmi = calculateBMI();
-			final Text info = new Text(String.format("%s%.2f", "Your BMI is ", bmi));
+			double bmi = calculateBMI();
+			Text info = new Text(String.format("%s%.2f", "Your BMI is ", bmi));
 			info.setFill(Color.RED);
 			
 			pane.setBottom(info);
@@ -77,7 +86,7 @@ public class BMI_Calculator extends Application
 			}
 		});
 		
-		
+		//Setting up elements in the main pane
 		pane.setTop(text);
 		BorderPane.setAlignment(text, Pos.TOP_CENTER);
 		text.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
@@ -93,16 +102,17 @@ public class BMI_Calculator extends Application
 		primaryStage.show();
 	}
 	
+	//This method uses the values for the height and weight and calculates the person's BMI
 	public double calculateBMI()
 	{
 		double feet, inches, totalInches, weight, bmi;
 		
-		feet = Double.parseDouble(tfFeet.getText());
-		inches = Double.parseDouble(tfInches.getText());
+		feet = cbFeet.getValue();
+		inches = cbInches.getValue();
 		weight = Double.parseDouble(tfPounds.getText());
 		
 		totalInches = feet * 12 + inches;
-		bmi = (weight * 703) / Math.pow(totalInches, 2);
+		bmi = (weight * 703) / Math.pow(totalInches, 2); //BMI formula
 		
 		return bmi;
 	}

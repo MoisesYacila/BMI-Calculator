@@ -24,6 +24,7 @@ public class BMI_Calculator extends Application
 	TextField tfFeet = new TextField();
 	TextField tfInches = new TextField();
 	TextField tfPounds = new TextField();
+	Text info = new Text();
 	
 	@Override
 	public void start(Stage primaryStage)
@@ -66,17 +67,28 @@ public class BMI_Calculator extends Application
 		btCalculate.setOnAction(e-> {
 			
 			double bmi = calculateBMI();
-			Text info = new Text(String.format("%s%.2f", "Your BMI is ", bmi));
+			info.setText(String.format("%s%.2f", "Your BMI is ", bmi));
 			info.setFill(Color.RED);
 			
 			pane.setBottom(info);
 			BorderPane.setAlignment(info, Pos.CENTER);
 			
-			if (bmi < 18.5)
+			//Input validation
+			//If BMI is zero. User entered wrong data
+			if (bmi == 0)
+				info.setText("Error. Enter a valid weight.");
+			
+			else if (bmi < 0)
+				info.setText("Error. Weight must be positive.");
+			
+			else if (cbFeet.getValue() == 0 && cbInches.getValue() == 0)
+				info.setText("Error. Height cannot be zero.");
+			
+			//Determine your weight category with the information that we have
+			else if (bmi < 18.5)
 				info.setText(info.getText() + "\nYou are underweight.");
 				
-			
-			if (bmi >= 25)
+			else if (bmi >= 25)
 				info.setText(info.getText() + "\nYou are overweight.");
 			
 			else
@@ -105,14 +117,22 @@ public class BMI_Calculator extends Application
 	//This method uses the values for the height and weight and calculates the person's BMI
 	public double calculateBMI()
 	{
-		double feet, inches, totalInches, weight, bmi;
+		double feet, inches, totalInches, weight, bmi = 0;
 		
-		feet = cbFeet.getValue();
-		inches = cbInches.getValue();
-		weight = Double.parseDouble(tfPounds.getText());
+		//Try-catch block handles cases where the user enters the wrong data or doesn't enter anything
+		try
+		{
+			feet = cbFeet.getValue();
+			inches = cbInches.getValue();
+			weight = Double.parseDouble(tfPounds.getText());
+			totalInches = feet * 12 + inches;
+			bmi = (weight * 703) / Math.pow(totalInches, 2); //BMI formula
+		}
 		
-		totalInches = feet * 12 + inches;
-		bmi = (weight * 703) / Math.pow(totalInches, 2); //BMI formula
+		catch (NumberFormatException e)
+		{
+			//Caught
+		}
 		
 		return bmi;
 	}
